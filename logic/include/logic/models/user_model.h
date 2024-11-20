@@ -2,22 +2,24 @@
 
 #include <string>
 #include <rfl.hpp>
+#include <rfl/json.hpp>
 
 enum class user_type_t
 {
-    customer, admin
+    customer, admin, unknown
 };
 
-class user_model_t
+struct user_model_t
 {
-public:
     rfl::Email email;
+
+    /** Can be encrypted in some context */
     std::string crypted_password;
 
     user_type_t user_type;
 
-    // will be inited only on local user
+    /** will be inited only on local user */
     std::optional<std::string> jwt;
 
-    rfl::Timestamp<"%Y-%m-%d-%h-%m-%s"> creation_date;
+    std::optional<uint64_t> creation_date;
 };

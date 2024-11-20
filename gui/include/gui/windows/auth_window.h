@@ -23,7 +23,4 @@ protected:
     char password[256] = {0};
     char repeat_password[256] = {0};
 
-protected:
-
-
 };

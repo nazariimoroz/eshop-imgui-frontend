@@ -4,10 +4,13 @@
 #include "gui/windows/auth_window.h"
 #include "gui/windows/shop_list_window_t.h"
 #include "gui/windows/user_profile_window_t.h"
+#include "logic/cache.h"
 
 int main()
 {
     const auto gui = gui_t::create();
+    const auto cache = cache_t::create();
+
     if(!gui)
     {
         std::cerr << "Failed to create gui object" << std::endl;

@@ -1,4 +1,4 @@
-#include "auth_window.h"
+#include "gui/windows/auth_window.h"
 
 #include <iostream>
 #include <regex>
@@ -6,6 +6,9 @@
 
 #include "imgui.h"
 #include "gui/imgui_ex.h"
+#include "logic/cache.h"
+#include "logic/user_fabric.h"
+#include "logic/models/user_model.h"
 
 auth_window_t::auth_window_t()
 {
@@ -17,6 +20,12 @@ void auth_window_t::update()
 {
     if (!is_shown())
         return;
+
+    if(cache_t::get().get_user_model().lock())
+    {
+        set_show(false);
+        return;
+    }
 
     const auto vp = ImGui::GetMainViewport();
     if (!m_inited)
@@ -115,29 +124,20 @@ void auth_window_t::registration_tab()
 
 void auth_window_t::login()
 {
-    if(email[0] == 0 || password[0] == 0)
-        return;
-
-    std::regex email_regex(R"(^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$)");
-    if(std::regex_match(email, email + strlen(email), email_regex)
-        && strlen(password) >= 8)
+    if(const auto ufabric = user_fabric_t::create())
     {
-        std::cout << email << " " << password << std::endl;
+
     }
 }
 
 void auth_window_t::registration()
 {
-    if(email[0] == 0 || password[0] == 0 || repeat_password[0] == 0)
-        return;
-
-    if(strcmp(password, repeat_password) != 0)
-        return;
-
-    std::regex email_regex(R"(^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$)");
-    if(std::regex_match(email, email + strlen(email), email_regex)
-        && strlen(password) >= 8)
+    if(const auto ufabric = user_fabric_t::create())
     {
-        std::cout << email << " " << password << std::endl;
+        const auto [ok, message] = ufabric->save(email, password, repeat_password);
+        if(!ok)
+        {
+            std::cerr << "Failed to save: " << email << std::endl;
+        }
     }
 }

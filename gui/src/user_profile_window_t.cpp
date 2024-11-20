@@ -6,6 +6,8 @@
 
 #include "gui/gui.h"
 #include "imgui.h"
+#include "logic/cache.h"
+#include "logic/models/user_model.h"
 
 user_profile_window_t::user_profile_window_t()
 {
