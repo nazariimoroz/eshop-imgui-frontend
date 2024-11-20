@@ -22,7 +22,11 @@ add_library(${PROJECT_NAME} STATIC
         include/gui/windows/shop_list_window_t.h
         src/shop_list_window_t.cpp
         include/gui/windows/user_profile_window_t.h
-        src/user_profile_window_t.cpp)
+        src/user_profile_window_t.cpp
+        include/gui/windows/auth_window.cpp
+        include/gui/windows/auth_window.h
+        include/gui/imgui_ex.cpp
+        include/gui/imgui_ex.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         include

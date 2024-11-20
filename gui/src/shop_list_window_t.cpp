@@ -29,15 +29,15 @@ void shop_list_window_t::update()
 
     if (ImGui::BeginTabBar("#tabs"))
     {
-        if (ImGui::BeginTabItem("Esp"))
+        if (ImGui::BeginTabItem("Test1"))
         {
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Aim"))
+        if (ImGui::BeginTabItem("Test2"))
         {
             ImGui::EndTabItem();
         }
-        if (ImGui::BeginTabItem("Config"))
+        if (ImGui::BeginTabItem("Test3"))
         {
             ImGui::EndTabItem();
         }
