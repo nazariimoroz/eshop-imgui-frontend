@@ -60,7 +60,6 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
      * SERVER ASYNC CODE
      */
 
-    /*
     auto user = std::make_shared<user_model_t>(
         email,
         password,
@@ -69,7 +68,6 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
         std::chrono::system_clock::now().time_since_epoch().count()
     );
     cache_t::get().set_user_model(user);
-*/
 
     return {true, "ok"};
 }

@@ -30,57 +30,60 @@ void user_profile_window_t::update()
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoBringToFrontOnFocus );
 
-    ImGui::Text("Test User");
-    ImGui::Separator();
-
-    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0);
-    if (ImGui::TreeNode("Your payments"))
+    if(const auto user = cache_t::get().get_user_model().lock())
     {
-        ImGui::Button("Payment3", ImVec2(ImGui::GetColumnWidth(), 0));
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("Change your info"))
-    {
-        ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-        ImGui::InputTextWithHint("##new_email",
-            "New email(optional)",
-            new_email,
-            256);
+        ImGui::Text(user->email.value().c_str());
+        ImGui::Separator();
 
-        ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-        ImGui::InputTextWithHint("##new_password",
-            "New password(optional)",
-            new_password,
-            256, ImGuiInputTextFlags_Password);
-
-        if(new_password[0])
+        ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0);
+        if (ImGui::TreeNode("Your payments"))
+        {
+            ImGui::Button("Payment3", ImVec2(ImGui::GetColumnWidth(), 0));
+            ImGui::TreePop();
+        }
+        else if (ImGui::TreeNode("Change your info"))
         {
             ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-            ImGui::InputTextWithHint("##new_password_repeat",
-                "Repeat password",
-                new_password_repeat,
+            ImGui::InputTextWithHint("##new_email",
+                "New email(optional)",
+                new_email,
+                256);
+
+            ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
+            ImGui::InputTextWithHint("##new_password",
+                "New password(optional)",
+                new_password,
                 256, ImGuiInputTextFlags_Password);
-        }
 
-        if(new_email[0] || new_password[0])
-        {
-            if(!new_password[0] || (new_password[0] && strcmp(new_password, new_password_repeat) == 0))
+            if(new_password[0])
             {
-                ImGui::Spacing();
                 ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-                ImGui::InputTextWithHint("##old_password",
-                    "Old password",
-                    old_password,
+                ImGui::InputTextWithHint("##new_password_repeat",
+                    "Repeat password",
+                    new_password_repeat,
                     256, ImGuiInputTextFlags_Password);
-
-
-                ImGui::Button("Change password", ImVec2(ImGui::GetColumnWidth(), 0));
             }
-        }
 
-        ImGui::TreePop();
+            if(new_email[0] || new_password[0])
+            {
+                if(!new_password[0] || (new_password[0] && strcmp(new_password, new_password_repeat) == 0))
+                {
+                    ImGui::Spacing();
+                    ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
+                    ImGui::InputTextWithHint("##old_password",
+                        "Old password",
+                        old_password,
+                        256, ImGuiInputTextFlags_Password);
+
+
+                    ImGui::Button("Change password", ImVec2(ImGui::GetColumnWidth(), 0));
+                }
+            }
+
+            ImGui::TreePop();
+        }
+        ImGui::PopStyleVar();
     }
-    ImGui::PopStyleVar();
 
     ImGui::End();
 }
