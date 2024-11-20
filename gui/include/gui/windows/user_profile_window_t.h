@@ -1,12 +1,12 @@
 #pragma once
-#include "base_window.h"
+#include "gui/base_window_t.h"
 
-class user_profile_window
-    : public base_window
+class user_profile_window_t
+    : public base_window_t
 {
 public:
-    user_profile_window();
-    ~user_profile_window() override = default;
+    user_profile_window_t();
+    ~user_profile_window_t() override = default;
 
     void update() override;
 

@@ -1,19 +1,19 @@
-#include "user_profile_window.h"
+#include "gui/windows/user_profile_window_t.h"
 
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 
-#include "gui.h"
+#include "gui/gui.h"
 #include "imgui.h"
 
-user_profile_window::user_profile_window()
+user_profile_window_t::user_profile_window_t()
 {
     name = "UserProfile";
     set_show(true);
 }
 
-void user_profile_window::update()
+void user_profile_window_t::update()
 {
     if(!is_shown())
         return;

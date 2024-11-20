@@ -1,18 +1,18 @@
-#include "shop_list_window.h"
+#include "gui/windows/shop_list_window_t.h"
 
 #include <functional>
 #include <stdexcept>
 
-#include "gui.h"
+#include "gui/gui.h"
 #include "imgui.h"
 
-shop_list_window::shop_list_window()
+shop_list_window_t::shop_list_window_t()
 {
     name = "ShopListWindow";
     set_show(true);
 }
 
-void shop_list_window::update()
+void shop_list_window_t::update()
 {
     if(!is_shown())
         return;

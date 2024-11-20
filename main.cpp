@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "gui/gui.h"
-#include "gui/shop_list_window.h"
-#include "gui/user_profile_window.h"
+#include "gui/windows/shop_list_window_t.h"
+#include "gui/windows/user_profile_window_t.h"
 
 int main()
 {
@@ -21,8 +21,8 @@ int main()
     }
     gui->create_imgui();
 
-    gui->add_window(std::make_shared<shop_list_window>());
-    gui->add_window(std::make_shared<user_profile_window>());
+    gui->add_window(std::make_shared<shop_list_window_t>());
+    gui->add_window(std::make_shared<user_profile_window_t>());
 
     gui->loop();
 

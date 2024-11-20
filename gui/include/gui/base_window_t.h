@@ -1,15 +1,15 @@
 #pragma once
 #include <string>
 
-class base_window
+class base_window_t
 {
 public:
-    base_window() = default;
-    virtual ~base_window() = default;
-    base_window(const base_window&) = delete;
-    base_window& operator=(const base_window&) = delete;
-    base_window(base_window&&) = default;
-    base_window& operator=(base_window&&) = default;
+    base_window_t() = default;
+    virtual ~base_window_t() = default;
+    base_window_t(const base_window_t&) = delete;
+    base_window_t& operator=(const base_window_t&) = delete;
+    base_window_t(base_window_t&&) = default;
+    base_window_t& operator=(base_window_t&&) = default;
 
     virtual void update() = 0;
 

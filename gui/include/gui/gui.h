@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "base_window.h"
-#include "imgui/imgui.h"
+#include "base_window_t.h"
+#include "imgui.h"
 
 
 class gui_t
@@ -29,14 +29,14 @@ public:
 
     [[nodiscard]] const ImVec2& size() const { return m_size; }
 
-    std::weak_ptr<base_window> add_window(const std::shared_ptr<base_window>& window);
-    std::weak_ptr<base_window> get_window_by_name(const std::string& name);
-    void remove_window(const std::weak_ptr<base_window>& window);
-    void remove_window(const base_window* window);
+    std::weak_ptr<base_window_t> add_window(const std::shared_ptr<base_window_t>& window);
+    std::weak_ptr<base_window_t> get_window_by_name(const std::string& name);
+    void remove_window(const std::weak_ptr<base_window_t>& window);
+    void remove_window(const base_window_t* window);
 
 
 protected:
-    std::vector<std::shared_ptr<base_window>> m_windows;
+    std::vector<std::shared_ptr<base_window_t>> m_windows;
     bool m_windows_changed = false;
 
 #pragma region Gui Drawing

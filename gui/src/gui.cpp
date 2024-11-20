@@ -1,11 +1,11 @@
-#include "gui.h"
+#include "gui/gui.h"
 
 #include <iostream>
 #include <stdexcept>
 
-#include "imgui/imgui.h"
-#include "imgui/backend/imgui_impl_dx9.h"
-#include "imgui/backend/imgui_impl_win32.h"
+#include "imgui.h"
+#include "backend/imgui_impl_dx9.h"
+#include "backend/imgui_impl_win32.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
     HWND window,
@@ -73,15 +73,15 @@ gui_t& gui_t::get()
 }
 
 
-std::weak_ptr<base_window> gui_t::add_window(const std::shared_ptr<base_window>& window)
+std::weak_ptr<base_window_t> gui_t::add_window(const std::shared_ptr<base_window_t>& window)
 {
     m_windows.push_back(window);
     return window;
 }
 
-std::weak_ptr<base_window> gui_t::get_window_by_name(const std::string& name)
+std::weak_ptr<base_window_t> gui_t::get_window_by_name(const std::string& name)
 {
-    const auto wi = std::ranges::find_if(m_windows, [&name](std::shared_ptr<base_window>& w)
+    const auto wi = std::ranges::find_if(m_windows, [&name](std::shared_ptr<base_window_t>& w)
     {
         return w->get_name() == name;
     });
@@ -91,7 +91,7 @@ std::weak_ptr<base_window> gui_t::get_window_by_name(const std::string& name)
     return *wi;
 }
 
-void gui_t::remove_window(const std::weak_ptr<base_window>& window)
+void gui_t::remove_window(const std::weak_ptr<base_window_t>& window)
 {
     if (const auto w = window.lock())
     {
@@ -104,11 +104,11 @@ void gui_t::remove_window(const std::weak_ptr<base_window>& window)
     }
 }
 
-void gui_t::remove_window(const base_window* const window)
+void gui_t::remove_window(const base_window_t* const window)
 {
     if (const auto w = window)
     {
-        const auto wi = std::ranges::find_if(m_windows, [w](std::shared_ptr<base_window>& sw)
+        const auto wi = std::ranges::find_if(m_windows, [w](std::shared_ptr<base_window_t>& sw)
         {
             return sw.get() == w;
         });
