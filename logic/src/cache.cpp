@@ -52,18 +52,6 @@ cache_t& cache_t::get()
 void cache_t::set_user_model(const std::shared_ptr<user_model_t>& in_user_model)
 {
     user_model = in_user_model;
-
-    std::string result = rfl::json::write(*user_model);
-
-    /*
-    std::ofstream ifs{};
-
-    ifs.open("cache_user.json");
-    if (ifs.is_open())
-    {
-        ifs << result;
-        ifs.close();
-    }*/
 }
 
 std::string cache_t::get_jwt() const

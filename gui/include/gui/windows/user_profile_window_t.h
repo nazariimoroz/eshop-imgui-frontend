@@ -10,6 +10,8 @@ public:
 
     void update() override;
 
+    void logout();
+
 protected:
     char new_email[256] = {0};
     char new_password[256] = {0};

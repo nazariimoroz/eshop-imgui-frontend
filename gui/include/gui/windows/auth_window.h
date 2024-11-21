@@ -17,6 +17,8 @@ public:
     void login();
     void registration();
 
+    void cleanup();
+
 protected:
     bool m_inited = false;
 

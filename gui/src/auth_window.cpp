@@ -144,7 +144,10 @@ void auth_window_t::login()
         if(!ok)
         {
             std::cerr << "Failed to load: " << message << std::endl;
+            return;
         }
+
+        cleanup();
     }
 }
 
@@ -156,6 +159,16 @@ void auth_window_t::registration()
         if(!ok)
         {
             std::cerr << "Failed to save: " << message << std::endl;
+            return;
         }
+
+        cleanup();
     }
+}
+
+void auth_window_t::cleanup()
+{
+    email[0] = 0;
+    password[0] = 0;
+    repeat_password[0] = 0;
 }

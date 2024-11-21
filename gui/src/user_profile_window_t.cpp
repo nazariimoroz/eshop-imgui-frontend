@@ -82,8 +82,29 @@ void user_profile_window_t::update()
 
             ImGui::TreePop();
         }
+        else
+        {
+            if(ImGui::Button("Logout", ImVec2(ImGui::GetColumnWidth(), 0)))
+            {
+                logout();
+            }
+        }
+
         ImGui::PopStyleVar();
     }
 
     ImGui::End();
+}
+
+void user_profile_window_t::logout()
+{
+    auto& cache = cache_t::get();
+    cache.set_jwt("");
+    cache.set_user_model(nullptr);
+
+    auto& gui = gui_t::get();
+    if(const auto aw = gui.get_window_by_name("AuthWindow").lock())
+    {
+        aw->set_show(true);
+    }
 }
