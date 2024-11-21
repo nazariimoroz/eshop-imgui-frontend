@@ -27,21 +27,8 @@ void shop_list_window_t::update()
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoBringToFrontOnFocus );
 
-    if (ImGui::BeginTabBar("#tabs"))
-    {
-        if (ImGui::BeginTabItem("Test1"))
-        {
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Test2"))
-        {
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Test3"))
-        {
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-    }
+    ImGui::Text("Shop");
+    ImGui::Separator();
+
     ImGui::End();
 }

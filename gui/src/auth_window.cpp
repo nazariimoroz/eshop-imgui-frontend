@@ -7,7 +7,7 @@
 #include "imgui.h"
 #include "gui/imgui_ex.h"
 #include "logic/cache.h"
-#include "logic/user_fabric.h"
+#include "logic/fabrics/user_fabric.h"
 #include "logic/models/user_model.h"
 
 auth_window_t::auth_window_t()
@@ -131,8 +131,11 @@ void auth_window_t::try_login_via_cache()
         const auto [ok, message] = ufabric->load_jwt(cache_t::get().get_jwt());
         if(!ok)
         {
-            std::cerr << "Failed to load via jwt: " << message << std::endl;
+            std::cerr << "Failed to load: " << message << std::endl;
+            return;
         }
+
+        cleanup();
     }
 }
 

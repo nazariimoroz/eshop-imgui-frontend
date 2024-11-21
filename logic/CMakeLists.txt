@@ -13,7 +13,7 @@ add_library(${PROJECT_NAME} STATIC
         src/cache.cpp
         include/logic/cache.h
         src/user_fabric.cpp
-        include/logic/user_fabric.h
+        include/logic/fabrics/user_fabric.h
         src/task_manager.cpp
         include/logic/utilities/task_manager.h)
 
