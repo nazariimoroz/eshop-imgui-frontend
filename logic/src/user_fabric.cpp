@@ -10,6 +10,7 @@
 #include <rfl/json.hpp>
 
 #include "httplib/httplib.h"
+#include "logic/utilities/task_manager.h"
 
 struct api_create_user_body_t
 {
@@ -101,8 +102,10 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
 
     if (result.error() != httplib::Error::Success || result.value().status != 200)
     {
-        const auto message = rfl::json::read<api_error_response_t>(result.value().body)
-            .value_or({"unknown error"}).message;
+        const auto message = result
+                                 ? rfl::json::read<api_error_response_t>(result->body)
+                                   .value_or({"unknown error"}).message
+                                 : "unknown error";
         return {false, message};
     }
 
@@ -133,8 +136,10 @@ std::tuple<bool, std::string> user_fabric_t::load(const std::string& email, cons
 
     if (result.error() != httplib::Error::Success || result.value().status != 200)
     {
-        const auto message = rfl::json::read<api_error_response_t>(result.value().body)
-            .value_or({"unknown error"}).message;
+        const auto message = result
+                                 ? rfl::json::read<api_error_response_t>(result->body)
+                                   .value_or({"unknown error"}).message
+                                 : "unknown error";
         return {false, message};
     }
 
@@ -153,30 +158,41 @@ std::tuple<bool, std::string> user_fabric_t::load_jwt(const std::string& jwt) co
     if (jwt.empty())
         return {false, "no jwt"};
 
-    httplib::Client cli(BACKEND_HOST);
-
-    api_get_user_body_t body{jwt, "", ""};
-
-    std::string a = rfl::json::write(body);
-    const auto result = cli.Post("/api/get_user",
-                                 rfl::json::write(body),
-                                 "application/json");
-
-    if (result.error() != httplib::Error::Success || result.value().status != 200)
+    auto cli = std::make_shared<httplib::Client>(BACKEND_HOST);
+    if (!cli->is_valid())
     {
-        cache_t::get().set_jwt("");
-
-        const auto message = rfl::json::read<api_error_response_t>(result.value().body)
-            .value_or({"unknown error"}).message;
-        return {false, message};
+        return {false, "Cant open server"};
     }
 
-    const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
+    task_manager_t::get().add_async_callback([cli, jwt]()
+    {
+        api_get_user_body_t body{jwt, "", ""};
 
-    auto user = std::make_shared<user_model_t>(response.user);
-    cache_t::get().set_user_model(user);
+        const auto result = cli->Post("/api/get_user",
+                                      rfl::json::write(body),
+                                      "application/json");
 
-    cache_t::get().set_jwt(response.jwt);
+        if (result.error() != httplib::Error::Success || result.value().status != 200)
+        {
+            cache_t::get().set_jwt("");
 
-    return {true, "TODO"};
+            const auto message = result
+                                     ? rfl::json::read<api_error_response_t>(result->body)
+                                       .value_or({"unknown error"}).message
+                                     : "unknown error";
+            std::cerr << "Error: " << message << std::endl;
+        }
+
+        const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
+
+        task_manager_t::get().add_callback([response]()
+        {
+            auto user = std::make_shared<user_model_t>(response.user);
+            cache_t::get().set_user_model(user);
+
+            cache_t::get().set_jwt(response.jwt);
+        });
+    });
+
+    return {true, "ok"};
 }

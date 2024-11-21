@@ -5,11 +5,13 @@
 #include "gui/windows/shop_list_window_t.h"
 #include "gui/windows/user_profile_window_t.h"
 #include "logic/cache.h"
+#include "logic/utilities/task_manager.h"
 
 int main()
 {
     const auto gui = gui_t::create();
     const auto cache = cache_t::create();
+    const auto task_manager = task_manager_t::create();
 
     if(!gui)
     {
@@ -30,6 +32,8 @@ int main()
     gui->add_window(std::make_shared<auth_window_t>());
 
     gui->loop();
+
+    task_manager->wait();
 
     return 0;
 }

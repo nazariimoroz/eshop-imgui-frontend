@@ -5,3 +5,4 @@ requirements:
   - "cpp-httplib/0.16.0"
   - "yyjson/0.9.0"
   - "reflect-cpp/0.11.1"
+  - "bshoshany-thread-pool/4.1.0"

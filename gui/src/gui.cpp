@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "backend/imgui_impl_dx9.h"
 #include "backend/imgui_impl_win32.h"
+#include "logic/utilities/task_manager.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
     HWND window,
@@ -307,6 +308,8 @@ void gui_t::loop() noexcept
         begin_render();
         render();
         end_render();
+
+        task_manager_t::get().process();
     }
 
     destroy_imgui();

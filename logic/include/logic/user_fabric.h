@@ -10,6 +10,7 @@ class user_fabric_t
     : protected std::enable_shared_from_this<user_fabric_t>
 {
     struct private_t{ explicit private_t() = default; };
+
 public:
     user_fabric_t(private_t);
     ~user_fabric_t();
