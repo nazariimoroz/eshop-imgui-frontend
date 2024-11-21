@@ -12,11 +12,7 @@ enum class user_type_t
 struct user_model_t
 {
     rfl::Email email;
-
-    /** Can be encrypted in some context */
     std::string password;
-
     user_type_t user_type;
-
     std::optional<uint64_t> creation_date;
 };

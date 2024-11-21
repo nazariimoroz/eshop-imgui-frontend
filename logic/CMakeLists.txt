@@ -15,7 +15,13 @@ add_library(${PROJECT_NAME} STATIC
         src/user_fabric.cpp
         include/logic/fabrics/user_fabric.h
         src/task_manager.cpp
-        include/logic/utilities/task_manager.h)
+        include/logic/utilities/task_manager.h
+        src/category_model.cpp
+        include/logic/models/category_model.h
+        src/product_model.cpp
+        include/logic/models/product_model.h
+        src/product_fabric.cpp
+        include/logic/fabrics/product_fabric.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ./include/ )
