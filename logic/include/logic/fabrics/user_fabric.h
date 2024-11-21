@@ -46,4 +46,9 @@ public:
     std::tuple<bool, std::string> load_jwt(
         const std::string& jwt) const;
 
+    std::function<void(bool error, std::string message)> loaded_callback;
+
+protected:
+    void send_error_callback(const std::string& message) const;
+
 };

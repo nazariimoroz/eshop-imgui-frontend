@@ -98,7 +98,8 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
         return {false, "Cant open server"};
     }
 
-    task_manager_t::get().add_async_callback([cli, email, password]()
+    auto self = shared_from_this();
+    task_manager_t::get().add_async_callback([self, cli, email, password]()
     {
         api_create_user_body_t body{email, password};
 
@@ -112,18 +113,23 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
                                      ? rfl::json::read<api_error_response_t>(result->body)
                                        .value_or({"unknown error"}).message
                                      : "unknown error";
-            std::cerr << "Error: " << message << std::endl;
+
+            self->send_error_callback(message);
+
             return;
         }
 
         const auto response = rfl::json::read<api_create_user_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([response]()
+        task_manager_t::get().add_callback([self, response]()
         {
             auto user = std::make_shared<user_model_t>(response.user);
             cache_t::get().set_user_model(user);
 
             cache_t::get().set_jwt(response.jwt);
+
+            if(self->loaded_callback)
+                self->loaded_callback(true, "");
         });
     });
 
@@ -142,7 +148,8 @@ std::tuple<bool, std::string> user_fabric_t::load(const std::string& email, cons
         return {false, "Cant open server"};
     }
 
-    task_manager_t::get().add_async_callback([cli, email, password]()
+    auto self = shared_from_this();
+    task_manager_t::get().add_async_callback([self, cli, email, password]()
     {
         api_get_user_body_t body{"", email, password};
 
@@ -157,18 +164,23 @@ std::tuple<bool, std::string> user_fabric_t::load(const std::string& email, cons
                                      ? rfl::json::read<api_error_response_t>(result->body)
                                        .value_or({"unknown error"}).message
                                      : "unknown error";
-            std::cerr << "Error: " << message << std::endl;
+
+            self->send_error_callback(message);
+
             return;
         }
 
         const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([response]()
+        task_manager_t::get().add_callback([self, response]()
         {
             auto user = std::make_shared<user_model_t>(response.user);
             cache_t::get().set_user_model(user);
 
             cache_t::get().set_jwt(response.jwt);
+
+            if(self->loaded_callback)
+                self->loaded_callback(true, "");
         });
     });
 
@@ -186,7 +198,8 @@ std::tuple<bool, std::string> user_fabric_t::load_jwt(const std::string& jwt) co
         return {false, "Cant open server"};
     }
 
-    task_manager_t::get().add_async_callback([cli, jwt]()
+    auto self = shared_from_this();
+    task_manager_t::get().add_async_callback([self, cli, jwt]()
     {
         api_get_user_body_t body{jwt, "", ""};
 
@@ -202,20 +215,36 @@ std::tuple<bool, std::string> user_fabric_t::load_jwt(const std::string& jwt) co
                                      ? rfl::json::read<api_error_response_t>(result->body)
                                        .value_or({"unknown error"}).message
                                      : "unknown error";
-            std::cerr << "Error: " << message << std::endl;
+
+            self->send_error_callback(message);
+
             return;
         }
 
         const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([response]()
+        task_manager_t::get().add_callback([self, response]()
         {
             auto user = std::make_shared<user_model_t>(response.user);
             cache_t::get().set_user_model(user);
 
             cache_t::get().set_jwt(response.jwt);
+
+            if(self->loaded_callback)
+                self->loaded_callback(true, "");
         });
     });
 
     return {true, "ok"};
+}
+
+void user_fabric_t::send_error_callback(const std::string& message) const
+{
+    if(loaded_callback)
+    {
+        task_manager_t::get().add_callback([self = shared_from_this(), message]()
+        {
+            self->loaded_callback(false, message);
+        });
+    }
 }

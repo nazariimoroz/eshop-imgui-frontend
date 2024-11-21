@@ -26,4 +26,7 @@ protected:
     char password[256] = {0};
     char repeat_password[256] = {0};
 
+protected:
+    void loaded_callback(bool ok, const std::string& message);
+
 };

@@ -5,7 +5,10 @@
 #include <stdexcept>
 
 #include "imgui.h"
+#include "gui/gui.h"
 #include "gui/imgui_ex.h"
+#include "gui/windows/shop_list_window_t.h"
+#include "gui/windows/user_profile_window_t.h"
 #include "logic/cache.h"
 #include "logic/fabrics/user_fabric.h"
 #include "logic/models/user_model.h"
@@ -20,12 +23,6 @@ void auth_window_t::update()
 {
     if (!is_shown())
         return;
-
-    if(cache_t::get().get_user_model().lock())
-    {
-        set_show(false);
-        return;
-    }
 
     const auto vp = ImGui::GetMainViewport();
     if (!m_inited)
@@ -128,14 +125,15 @@ void auth_window_t::try_login_via_cache()
 {
     if(const auto ufabric = user_fabric_t::create())
     {
+        ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
+            std::placeholders::_1,
+            std::placeholders::_2);
+
         const auto [ok, message] = ufabric->load_jwt(cache_t::get().get_jwt());
         if(!ok)
         {
             std::cerr << "Failed to load: " << message << std::endl;
-            return;
         }
-
-        cleanup();
     }
 }
 
@@ -143,14 +141,15 @@ void auth_window_t::login()
 {
     if(const auto ufabric = user_fabric_t::create())
     {
+        ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
+            std::placeholders::_1,
+            std::placeholders::_2);
+
         const auto [ok, message] = ufabric->load(email, password);
         if(!ok)
         {
             std::cerr << "Failed to load: " << message << std::endl;
-            return;
         }
-
-        cleanup();
     }
 }
 
@@ -158,14 +157,15 @@ void auth_window_t::registration()
 {
     if(const auto ufabric = user_fabric_t::create())
     {
+        ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
+            std::placeholders::_1,
+            std::placeholders::_2);
+
         const auto [ok, message] = ufabric->save(email, password, repeat_password);
         if(!ok)
         {
             std::cerr << "Failed to save: " << message << std::endl;
-            return;
         }
-
-        cleanup();
     }
 }
 
@@ -174,4 +174,21 @@ void auth_window_t::cleanup()
     email[0] = 0;
     password[0] = 0;
     repeat_password[0] = 0;
+}
+
+void auth_window_t::loaded_callback(bool ok, const std::string& message)
+{
+    if(ok)
+    {
+        gui_t::get().add_window(std::make_shared<user_profile_window_t>());
+        gui_t::get().add_window(std::make_shared<shop_list_window_t>());
+
+        set_show(false);
+
+        cleanup();
+    }
+    else
+    {
+        std::cerr << "Load error: " << message << std::endl;
+    }
 }
