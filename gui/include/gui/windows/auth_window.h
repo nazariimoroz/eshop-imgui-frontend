@@ -13,6 +13,7 @@ public:
     void login_tab();
     void registration_tab();
 
+    void try_login_via_cache();
     void login();
     void registration();
 

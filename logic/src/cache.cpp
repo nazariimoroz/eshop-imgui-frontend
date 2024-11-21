@@ -6,18 +6,23 @@
 
 #include "logic/models/user_model.h"
 
+struct cache_struct_t
+{
+    std::string jwt;
+};
+
 cache_t::cache_t()
 {
     std::ifstream ifs{};
 
-    ifs.open("cache_user.json");
+    ifs.open("cache.json");
     if (ifs.is_open())
     {
         std::string str((std::istreambuf_iterator<char>(ifs)),
                         std::istreambuf_iterator<char>());
-        user_model = std::make_shared<user_model_t>(
-            rfl::json::read<user_model_t>(str).value()
-        );
+        const auto result = rfl::json::read<cache_struct_t>(str).value();
+
+        jwt = result.jwt;
 
         ifs.close();
     }
@@ -59,4 +64,24 @@ void cache_t::set_user_model(const std::shared_ptr<user_model_t>& in_user_model)
         ifs << result;
         ifs.close();
     }*/
+}
+
+std::string cache_t::get_jwt() const
+{
+    return jwt;
+}
+
+void cache_t::set_jwt(const std::string& in_jwt)
+{
+    jwt = in_jwt;
+
+    std::ofstream ifs{};
+    ifs.open("cache.json");
+    if (ifs.is_open())
+    {
+        ifs << rfl::json::write(cache_struct_t{
+            .jwt = jwt
+        });
+        ifs.close();
+    }
 }

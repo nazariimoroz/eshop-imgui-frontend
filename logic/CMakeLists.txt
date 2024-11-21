@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(yyjson REQUIRED)
 find_package(reflect-cpp REQUIRED)
+find_package(httplib REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
         include/logic/models/user_model.h
@@ -16,6 +17,9 @@ add_library(${PROJECT_NAME} STATIC
 target_include_directories(${PROJECT_NAME} PUBLIC
         ./include/ )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC
         yyjson::yyjson
-        reflect-cpp::reflect-cpp)
+        reflect-cpp::reflect-cpp
+        PRIVATE
+        httplib::httplib)

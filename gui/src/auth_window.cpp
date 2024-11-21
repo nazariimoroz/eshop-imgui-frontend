@@ -33,6 +33,8 @@ void auth_window_t::update()
         ImGui::SetNextWindowPos(ImVec2(vp->Size.x / 4.f, vp->Size.y / 4.f));
         ImGui::SetNextWindowSize(ImVec2(vp->Size.x / 4.f * 2.f, vp->Size.y / 4.f * 2.f));
 
+        try_login_via_cache();
+
         m_inited = true;
     }
 
@@ -122,11 +124,27 @@ void auth_window_t::registration_tab()
     }
 }
 
+void auth_window_t::try_login_via_cache()
+{
+    if(const auto ufabric = user_fabric_t::create())
+    {
+        const auto [ok, message] = ufabric->load_jwt(cache_t::get().get_jwt());
+        if(!ok)
+        {
+            std::cerr << "Failed to load via jwt: " << message << std::endl;
+        }
+    }
+}
+
 void auth_window_t::login()
 {
     if(const auto ufabric = user_fabric_t::create())
     {
-
+        const auto [ok, message] = ufabric->load(email, password);
+        if(!ok)
+        {
+            std::cerr << "Failed to load: " << message << std::endl;
+        }
     }
 }
 
@@ -137,7 +155,7 @@ void auth_window_t::registration()
         const auto [ok, message] = ufabric->save(email, password, repeat_password);
         if(!ok)
         {
-            std::cerr << "Failed to save: " << email << std::endl;
+            std::cerr << "Failed to save: " << message << std::endl;
         }
     }
 }

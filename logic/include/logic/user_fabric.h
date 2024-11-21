@@ -41,4 +41,8 @@ public:
         const std::string& email,
         const std::string& password) const;
 
+    /** [ok, error_reason], result in cache */
+    std::tuple<bool, std::string> load_jwt(
+        const std::string& jwt) const;
+
 };

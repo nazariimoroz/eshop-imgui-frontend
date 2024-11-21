@@ -14,12 +14,9 @@ struct user_model_t
     rfl::Email email;
 
     /** Can be encrypted in some context */
-    std::string crypted_password;
+    std::string password;
 
     user_type_t user_type;
-
-    /** will be inited only on local user */
-    std::optional<std::string> jwt;
 
     std::optional<uint64_t> creation_date;
 };

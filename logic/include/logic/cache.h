@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 class user_model_t;
 
@@ -22,8 +23,12 @@ public:
     std::weak_ptr<user_model_t> get_user_model() const { return user_model; }
     void set_user_model(const std::shared_ptr<user_model_t>& in_user_model);
 
+    [[nodiscard]] std::string get_jwt() const;
+    void set_jwt(const std::string& in_jwt);
+
 protected:
     std::shared_ptr<user_model_t> user_model = nullptr;
+    std::string jwt;
 
 private:
     inline static std::unique_ptr<cache_t> m_singleton = nullptr;
