@@ -13,6 +13,7 @@ public:
     void update() override;
 
     void make_payment();
+    void check_payment();
 
 public:
     std::string payment;
@@ -29,6 +30,8 @@ private:
     void payment_created_callback(std::optional<payment_identificator_t> payment_identificator,
                                   std::string message);
 
-    void payment_done_callback(bool ok, std::string message);
+    void payment_done_callback(std::optional<std::string> product_value,
+                               std::string message);
 
+    void open_payment_link();
 };

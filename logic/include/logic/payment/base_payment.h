@@ -12,7 +12,7 @@ struct category_model_t;
 
 struct payment_identificator_t
 {
-    std::any identify;
+    int payment_id;
     std::string link;
 };
 
@@ -38,13 +38,14 @@ public:
     virtual std::tuple<bool, std::string> process(const category_model_t& category,
                                                   const product_model_t& product) = 0;
 
-    virtual std::tuple<bool, std::string> check_payment(const std::any& payment_identificator) = 0;
+    virtual std::tuple<bool, std::string> check_payment(const payment_identificator_t& payment_identificator) = 0;
 
 public:
     std::function<void(std::optional<payment_identificator_t> payment_identificator,
                        std::string message)> payment_created_callback;
 
-    std::function<void(bool ok, std::string message)> payment_done_callback;
+    std::function<void(std::optional<std::string> product_value,
+                       std::string message)> payment_done_callback;
 
     std::optional<std::weak_ptr<base_window_t>> context_window;
 };

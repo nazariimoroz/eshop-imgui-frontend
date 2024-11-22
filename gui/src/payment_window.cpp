@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "gui/gui.h"
+#include "gui/imgui_ex.h"
 
 payment_window_t::payment_window_t()
 {
@@ -51,14 +52,34 @@ void payment_window_t::update()
         pushed = true;
     }
 
+    if (m_identificator)
+    {
+        ImGui::Text("Waiting for your payment:  %c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
+    }
+
     {
         if (ImGui::Button("Make payment##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
         {
             make_payment();
         }
 
-        if (ImGui::Button("Check payment state##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
+        bool pushed2 = false;
+        if (!m_identificator)
         {
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            pushed2 = true;
+        }
+        {
+            if (ImGui::Button("Check payment state##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
+            {
+                check_payment();
+            }
+        }
+        if (pushed2)
+        {
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
         }
 
         if (ImGui::Button("Close##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
@@ -79,17 +100,18 @@ void payment_window_t::update()
 
 void payment_window_t::make_payment()
 {
+    if (m_identificator)
+    {
+        open_payment_link();
+        return;
+    }
+
     if (auto p = base_payment_t::create(payment))
     {
         using namespace std::placeholders;
 
         p->payment_created_callback = std::bind(
             &payment_window_t::payment_created_callback,
-            this,
-            _1, _2);
-
-        p->payment_done_callback = std::bind(
-            &payment_window_t::payment_done_callback,
             this,
             _1, _2);
 
@@ -106,27 +128,74 @@ void payment_window_t::make_payment()
     }
 }
 
+void payment_window_t::check_payment()
+{
+    if (!m_identificator)
+        return;
+
+    if (auto p = base_payment_t::create(payment))
+    {
+        using namespace std::placeholders;
+
+        p->payment_done_callback = std::bind(
+            &payment_window_t::payment_done_callback,
+            this,
+            _1, _2);
+
+        p->context_window = gui_t::get().get_window_by_name(get_name());
+
+        const auto [ok, message] = p->check_payment(*m_identificator);
+        if (!ok)
+        {
+            std::cerr << message << std::endl;
+            return;
+        }
+
+        m_loading = true;
+    }
+}
+
 void payment_window_t::payment_created_callback(
     std::optional<payment_identificator_t> payment_identificator,
     std::string message)
 {
     m_loading = false;
 
-    if (payment_identificator == std::nullopt)
+    m_identificator = std::move(payment_identificator);
+    if (m_identificator == std::nullopt)
     {
         std::cerr << message << std::endl;
         return;
     }
 
-    ShellExecuteA(NULL,
-        "open",
-        payment_identificator->link.c_str(),
-        NULL,
-        NULL,
-        SW_SHOWNORMAL);
+    open_payment_link();
 }
 
-void payment_window_t::payment_done_callback(bool ok, std::string message)
+void payment_window_t::payment_done_callback(
+    std::optional<std::string> product_value,
+    std::string message)
 {
     m_loading = false;
+
+    if (!product_value)
+    {
+        std::cerr << message << std::endl;
+        return;
+    }
+
+    std::cout << *product_value << std::endl;
+    /** TODO Open product value window */
+}
+
+void payment_window_t::open_payment_link()
+{
+    if (m_identificator)
+    {
+        ShellExecuteA(NULL,
+            "open",
+            m_identificator->link.c_str(),
+            NULL,
+            NULL,
+            SW_SHOWNORMAL);
+    }
 }
