@@ -1,5 +1,6 @@
 #pragma once
 #include "gui/base_window_t.h"
+#include "gui/gui.h"
 
 class user_profile_window_t
     : public base_window_t
@@ -10,7 +11,7 @@ public:
 
     void update() override;
 
-    void logout();
+    std::shared_ptr<user_profile_window_t> logout();
 
 protected:
     char new_email[256] = {0};

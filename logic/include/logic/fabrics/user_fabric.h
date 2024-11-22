@@ -4,7 +4,15 @@
 #include <string>
 #include <rfl/patterns.hpp>
 
-class user_model_t;
+#include "logic/models/user_model.h"
+
+class base_window_t;
+
+struct api_user_ok_response_t
+{
+    user_model_t user;
+    std::string jwt;
+};
 
 class user_fabric_t
     : public std::enable_shared_from_this<user_fabric_t>
@@ -48,7 +56,11 @@ public:
 
     std::function<void(bool error, std::string message)> loaded_callback;
 
+    std::optional<std::weak_ptr<base_window_t>> context_window;
+
 protected:
+    void send_ok_callback(const api_user_ok_response_t& response) const;
+
     void send_error_callback(const std::string& message) const;
 
 };

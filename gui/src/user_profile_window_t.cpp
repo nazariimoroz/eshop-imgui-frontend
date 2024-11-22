@@ -19,6 +19,7 @@ void user_profile_window_t::update()
 {
     if(!is_shown())
         return;
+    [[maybe_unused]] std::shared_ptr<user_profile_window_t> context_for_correct_exit = nullptr;
 
     const auto vp = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(ImVec2(vp->Size.x * 2.f / 3.f, 0));
@@ -86,7 +87,7 @@ void user_profile_window_t::update()
         {
             if(ImGui::Button("Logout", ImVec2(ImGui::GetColumnWidth(), 0)))
             {
-                logout();
+                context_for_correct_exit = logout();
             }
         }
 
@@ -96,15 +97,25 @@ void user_profile_window_t::update()
     ImGui::End();
 }
 
-void user_profile_window_t::logout()
+std::shared_ptr<user_profile_window_t> user_profile_window_t::logout()
 {
     auto& cache = cache_t::get();
     cache.set_jwt("");
     cache.set_user_model(nullptr);
 
     auto& gui = gui_t::get();
+
+    /** removes all old window on background */
+    auto to_ret = gui.remove_window(gui.get_window_by_name("UserProfile"));
+    for(const auto& w : {"ShopListWindow"})
+    {
+        gui.remove_window(gui.get_window_by_name(w));
+    }
+
     if(const auto aw = gui.get_window_by_name("AuthWindow").lock())
     {
         aw->set_show(true);
     }
+
+    return std::dynamic_pointer_cast<user_profile_window_t>(to_ret);
 }

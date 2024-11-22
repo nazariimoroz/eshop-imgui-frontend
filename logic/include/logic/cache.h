@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-class user_model_t;
+#include "models/user_model.h"
 
 class cache_t
 {

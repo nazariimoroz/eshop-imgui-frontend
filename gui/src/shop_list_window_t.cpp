@@ -109,6 +109,7 @@ void shop_list_window_t::try_get_all_products()
         pfabric->loaded_callback = std::bind(&shop_list_window_t::categories_loaded_callback, this,
                                              std::placeholders::_1,
                                              std::placeholders::_2);
+        pfabric->context_window = gui_t::get().get_window_by_name(get_name());
 
         const auto [ok, message] = pfabric->load_all();
         if (!ok)
@@ -140,7 +141,7 @@ void shop_list_window_t::open_payment_window(const char* payment,
 }
 
 void shop_list_window_t::categories_loaded_callback(
-    const std::optional<product_fabric_t::ctg_models_vec_t>& models,
+    const std::optional<std::vector<category_model_t>>& models,
     const std::string& message)
 {
     if (models)

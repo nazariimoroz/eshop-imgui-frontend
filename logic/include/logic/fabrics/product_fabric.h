@@ -5,6 +5,8 @@
 
 #include "logic/models/category_model.h"
 
+class base_window_t;
+
 class product_fabric_t
     : public std::enable_shared_from_this<product_fabric_t>
 {
@@ -26,6 +28,8 @@ public:
     std::tuple<bool, std::string> load_all() const;
 
     std::function<void(const std::optional<ctg_models_vec_t>& models, std::string message)> loaded_callback;
+
+    std::optional<std::weak_ptr<base_window_t>> context_window;
 
 protected:
     void send_callback(const std::optional<ctg_models_vec_t>& models,

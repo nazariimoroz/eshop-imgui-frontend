@@ -28,7 +28,7 @@ protected:
     std::weak_ptr<payment_window_t> m_payment_window;
 
 protected:
-    void categories_loaded_callback(const std::optional<product_fabric_t::ctg_models_vec_t>& models,
+    void categories_loaded_callback(const std::optional<std::vector<category_model_t>>& models,
                                     const std::string& message);
 
     void paymentw_on_begin_destroy_callback();

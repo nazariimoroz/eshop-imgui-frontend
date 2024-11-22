@@ -57,7 +57,14 @@ void product_fabric_t::send_callback(const std::optional<ctg_models_vec_t>& mode
     {
         task_manager_t::get().add_callback([self = shared_from_this(), models, message]()
         {
-            self->loaded_callback(models, message);
+            if(self->context_window == std::nullopt)
+            {
+                std::cerr << "user_fabric: context window dont set" << std::endl;
+            }
+            else if (const auto w = self->context_window->lock())
+            {
+                self->loaded_callback(models, message);
+            }
         });
     }
 }

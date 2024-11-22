@@ -128,6 +128,7 @@ void auth_window_t::try_login_via_cache()
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
             std::placeholders::_1,
             std::placeholders::_2);
+        ufabric->context_window = gui_t::get().get_window_by_name(get_name());
 
         const auto [ok, message] = ufabric->load_jwt(cache_t::get().get_jwt());
         if(!ok)
@@ -144,6 +145,7 @@ void auth_window_t::login()
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
             std::placeholders::_1,
             std::placeholders::_2);
+        ufabric->context_window = gui_t::get().get_window_by_name(get_name());
 
         const auto [ok, message] = ufabric->load(email, password);
         if(!ok)
@@ -160,6 +162,7 @@ void auth_window_t::registration()
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
             std::placeholders::_1,
             std::placeholders::_2);
+        ufabric->context_window = gui_t::get().get_window_by_name(get_name());
 
         const auto [ok, message] = ufabric->save(email, password, repeat_password);
         if(!ok)

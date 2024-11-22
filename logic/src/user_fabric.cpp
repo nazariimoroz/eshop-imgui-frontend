@@ -4,7 +4,6 @@
 
 #include "../../.env.h"
 #include "logic/cache.h"
-#include "logic/models/user_model.h"
 
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -18,12 +17,6 @@ struct api_create_user_body_t
     std::string password;
 };
 
-struct api_create_user_response_t
-{
-    user_model_t user;
-    std::string jwt;
-};
-
 struct api_error_response_t
 {
     std::string message;
@@ -34,12 +27,6 @@ struct api_get_user_body_t
     std::string jwt;
     std::string email;
     std::string password;
-};
-
-struct api_get_user_response_t
-{
-    user_model_t user;
-    std::string jwt;
 };
 
 user_fabric_t::user_fabric_t(private_t)
@@ -119,18 +106,9 @@ std::tuple<bool, std::string> user_fabric_t::save(const std::string& email,
             return;
         }
 
-        const auto response = rfl::json::read<api_create_user_response_t>(result.value().body).value();
+        const auto response = rfl::json::read<api_user_ok_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([self, response]()
-        {
-            auto user = std::make_shared<user_model_t>(response.user);
-            cache_t::get().set_user_model(user);
-
-            cache_t::get().set_jwt(response.jwt);
-
-            if(self->loaded_callback)
-                self->loaded_callback(true, "");
-        });
+        self->send_ok_callback(response);
     });
 
     return {true, "ok"};
@@ -170,18 +148,9 @@ std::tuple<bool, std::string> user_fabric_t::load(const std::string& email, cons
             return;
         }
 
-        const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
+        const auto response = rfl::json::read<api_user_ok_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([self, response]()
-        {
-            auto user = std::make_shared<user_model_t>(response.user);
-            cache_t::get().set_user_model(user);
-
-            cache_t::get().set_jwt(response.jwt);
-
-            if(self->loaded_callback)
-                self->loaded_callback(true, "");
-        });
+        self->send_ok_callback(response);
     });
 
     return {true, "ok"};
@@ -221,30 +190,48 @@ std::tuple<bool, std::string> user_fabric_t::load_jwt(const std::string& jwt) co
             return;
         }
 
-        const auto response = rfl::json::read<api_get_user_response_t>(result.value().body).value();
+        const auto response = rfl::json::read<api_user_ok_response_t>(result.value().body).value();
 
-        task_manager_t::get().add_callback([self, response]()
-        {
-            auto user = std::make_shared<user_model_t>(response.user);
-            cache_t::get().set_user_model(user);
-
-            cache_t::get().set_jwt(response.jwt);
-
-            if(self->loaded_callback)
-                self->loaded_callback(true, "");
-        });
+        self->send_ok_callback(response);
     });
 
     return {true, "ok"};
 }
 
+void user_fabric_t::send_ok_callback(const api_user_ok_response_t& response) const
+{
+    task_manager_t::get().add_callback([self = shared_from_this(), response]()
+    {
+        auto user = std::make_shared<user_model_t>(response.user);
+        cache_t::get().set_user_model(user);
+
+        cache_t::get().set_jwt(response.jwt);
+
+        if (self->context_window == std::nullopt)
+        {
+            self->loaded_callback(true, "ok");
+        }
+        else if (const auto w = self->context_window->lock())
+        {
+            self->loaded_callback(true, "ok");
+        }
+    });
+}
+
 void user_fabric_t::send_error_callback(const std::string& message) const
 {
-    if(loaded_callback)
+    if (loaded_callback)
     {
         task_manager_t::get().add_callback([self = shared_from_this(), message]()
         {
-            self->loaded_callback(false, message);
+            if (self->context_window == std::nullopt)
+            {
+                std::cerr << "user_fabric: context window dont set" << std::endl;
+            }
+            else if (const auto w = self->context_window->lock())
+            {
+                self->loaded_callback(false, message);
+            }
         });
     }
 }
