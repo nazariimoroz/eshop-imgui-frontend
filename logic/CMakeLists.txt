@@ -6,6 +6,7 @@ find_package(yyjson REQUIRED)
 find_package(reflect-cpp REQUIRED)
 find_package(httplib REQUIRED)
 find_package(bshoshany-thread-pool REQUIRED)
+find_package(stduuid REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
         include/logic/models/user_model.h
@@ -21,7 +22,11 @@ add_library(${PROJECT_NAME} STATIC
         src/product_model.cpp
         include/logic/models/product_model.h
         src/product_fabric.cpp
-        include/logic/fabrics/product_fabric.h)
+        include/logic/fabrics/product_fabric.h
+        src/base_payment.cpp
+        include/logic/payment/base_payment.h
+        src/google_payment.cpp
+        include/logic/payment/google_payment.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ./include/ )
@@ -32,4 +37,5 @@ target_link_libraries(${PROJECT_NAME}
         reflect-cpp::reflect-cpp
         bshoshany-thread-pool::bshoshany-thread-pool
         PRIVATE
-        httplib::httplib)
+        httplib::httplib
+        stduuid::stduuid)
