@@ -77,6 +77,8 @@ gui_t& gui_t::get()
 std::weak_ptr<base_window_t> gui_t::add_window(const std::shared_ptr<base_window_t>& window)
 {
     m_windows.push_back(window);
+    m_windows_changed = true;
+
     return window;
 }
 
@@ -92,7 +94,7 @@ std::weak_ptr<base_window_t> gui_t::get_window_by_name(const std::string& name)
     return *wi;
 }
 
-void gui_t::remove_window(const std::weak_ptr<base_window_t>& window)
+std::shared_ptr<base_window_t> gui_t::remove_window(const std::weak_ptr<base_window_t>& window)
 {
     if (const auto w = window.lock())
     {
@@ -101,11 +103,15 @@ void gui_t::remove_window(const std::weak_ptr<base_window_t>& window)
         {
             m_windows.erase(wi);
             m_windows_changed = true;
+
+            return w;
         }
     }
+
+    return nullptr;
 }
 
-void gui_t::remove_window(const base_window_t* const window)
+std::shared_ptr<base_window_t> gui_t::remove_window(const base_window_t* const window)
 {
     if (const auto w = window)
     {
@@ -115,10 +121,15 @@ void gui_t::remove_window(const base_window_t* const window)
         });
         if (wi != m_windows.end())
         {
+            auto temp_w = *wi;
             m_windows.erase(wi);
             m_windows_changed = true;
+
+            return temp_w;
         }
     }
+
+    return nullptr;
 }
 
 void gui_t::create_window(const char* win_name, const ImVec2& in_size) noexcept

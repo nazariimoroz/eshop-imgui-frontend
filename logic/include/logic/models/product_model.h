@@ -4,6 +4,7 @@
 
 struct product_model_t
 {
+    int32_t id;
     std::string name;
     std::string description;
     rfl::Description<"Prise in usd", uint32_t> price;
