@@ -33,6 +33,41 @@ void payment_window_t::update()
                  ImGuiWindowFlags_NoCollapse |
                  ImGuiWindowFlags_NoResize);
 
+    if (m_product_value)
+    {
+        product_ui(context_for_correct_exit);
+    }
+    else
+    {
+        payment_ui(context_for_correct_exit);
+    }
+
+    ImGui::End();
+}
+
+void payment_window_t::product_ui(std::shared_ptr<payment_window_t>& context_for_correct_exit)
+{
+    ImGuiEx::AlignForHeight(
+        ImGui::GetFrameHeight() * 3.f +
+        ImGui::GetStyle().ItemSpacing.y * 2.f);
+    
+    ImGui::Text("Your product:");
+    ImGui::InputText(
+        "##ProductValue",
+        m_product_value->data(),
+        m_product_value->size(),
+        ImGuiInputTextFlags_ReadOnly
+        | ImGuiInputTextFlags_AutoSelectAll);
+
+    if (ImGui::Button("Close##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
+    {
+        auto& gui = gui_t::get();
+        context_for_correct_exit = std::dynamic_pointer_cast<payment_window_t>(gui.remove_window(this));
+    }
+}
+
+void payment_window_t::payment_ui(std::shared_ptr<payment_window_t>& context_for_correct_exit)
+{
     const std::string amount = (product.amount.get() == -1)
                                    ? "infinity"
                                    : std::to_string(product.amount.get());
@@ -56,7 +91,6 @@ void payment_window_t::update()
     {
         ImGui::Text("Waiting for your payment:  %c", "|/-\\"[(int)(ImGui::GetTime() / 0.05f) & 3]);
     }
-
     {
         if (ImGui::Button("Make payment##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
         {
@@ -88,14 +122,11 @@ void payment_window_t::update()
             context_for_correct_exit = std::dynamic_pointer_cast<payment_window_t>(gui.remove_window(this));
         }
     }
-
     if (pushed)
     {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();
     }
-
-    ImGui::End();
 }
 
 void payment_window_t::make_payment()
@@ -183,8 +214,7 @@ void payment_window_t::payment_done_callback(
         return;
     }
 
-    std::cout << *product_value << std::endl;
-    /** TODO Open product value window */
+    m_product_value = product_value;
 }
 
 void payment_window_t::open_payment_link()
@@ -192,10 +222,10 @@ void payment_window_t::open_payment_link()
     if (m_identificator)
     {
         ShellExecuteA(NULL,
-            "open",
-            m_identificator->link.c_str(),
-            NULL,
-            NULL,
-            SW_SHOWNORMAL);
+                      "open",
+                      m_identificator->link.c_str(),
+                      NULL,
+                      NULL,
+                      SW_SHOWNORMAL);
     }
 }
