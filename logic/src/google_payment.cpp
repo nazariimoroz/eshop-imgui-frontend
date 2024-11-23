@@ -188,7 +188,7 @@ void google_payment_t::nt_check_payment(const payment_identificator_t& payment_i
     auto self = google_shared_from_this();
     task_manager_t::get().add_callback([self, response]()
     {
-        if (response.status != "done")
+        if (response.status != "paid")
         {
             self->mt_send_payment_done_callback(std::nullopt,
                                                 std::format("Product status is: {}", response.status));
@@ -196,7 +196,7 @@ void google_payment_t::nt_check_payment(const payment_identificator_t& payment_i
         else
         {
             self->mt_send_payment_done_callback(response.product_value,
-                                                "Product Value");
+                                                "ok");
         }
     });
 }

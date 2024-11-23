@@ -21,6 +21,7 @@ public:
 
 protected:
     bool m_inited = false;
+    bool m_loading = false;
 
     char email[256] = {0};
     char password[256] = {0};

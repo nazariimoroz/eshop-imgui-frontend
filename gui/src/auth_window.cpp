@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "gui/gui.h"
 #include "gui/imgui_ex.h"
 #include "gui/windows/shop_list_window_t.h"
@@ -72,10 +73,24 @@ void auth_window_t::login_tab()
                                  sizeof(password),
                                  ImGuiInputTextFlags_Password);
 
-        ImGuiEx::AlignForWidth(100);
-        if(ImGui::Button("Login", ImVec2(100, 0)))
+        bool pushed = false;
+        if (m_loading)
         {
-            login();
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            pushed = true;
+        }
+        {
+            ImGuiEx::AlignForWidth(100);
+            if(ImGui::Button("Login", ImVec2(100, 0)))
+            {
+                login();
+            }
+        }
+        if (pushed)
+        {
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
         }
 
         ImGui::EndTabItem();
@@ -111,10 +126,24 @@ void auth_window_t::registration_tab()
                                  sizeof(repeat_password),
                                  ImGuiInputTextFlags_Password);
 
+        bool pushed = false;
+        if (m_loading)
+        {
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            pushed = true;
+        }
+        {
         ImGuiEx::AlignForWidth(120);
         if(ImGui::Button("Registration##1", ImVec2(120, 0)))
         {
             registration();
+        }
+        }
+        if (pushed)
+        {
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
         }
 
         ImGui::EndTabItem();
@@ -123,6 +152,7 @@ void auth_window_t::registration_tab()
 
 void auth_window_t::try_login_via_cache()
 {
+    m_loading = true;
     if(const auto ufabric = user_fabric_t::create())
     {
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
@@ -133,6 +163,8 @@ void auth_window_t::try_login_via_cache()
         const auto [ok, message] = ufabric->load_jwt(cache_t::get().get_jwt());
         if(!ok)
         {
+            m_loading = false;
+
             std::cerr << "Failed to load: " << message << std::endl;
         }
     }
@@ -140,6 +172,7 @@ void auth_window_t::try_login_via_cache()
 
 void auth_window_t::login()
 {
+    m_loading = true;
     if(const auto ufabric = user_fabric_t::create())
     {
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
@@ -150,6 +183,8 @@ void auth_window_t::login()
         const auto [ok, message] = ufabric->load(email, password);
         if(!ok)
         {
+            m_loading = false;
+
             std::cerr << "Failed to load: " << message << std::endl;
         }
     }
@@ -157,6 +192,7 @@ void auth_window_t::login()
 
 void auth_window_t::registration()
 {
+    m_loading = true;
     if(const auto ufabric = user_fabric_t::create())
     {
         ufabric->loaded_callback = std::bind(&auth_window_t::loaded_callback, this,
@@ -167,6 +203,8 @@ void auth_window_t::registration()
         const auto [ok, message] = ufabric->save(email, password, repeat_password);
         if(!ok)
         {
+            m_loading = false;
+
             std::cerr << "Failed to save: " << message << std::endl;
         }
     }
@@ -181,6 +219,7 @@ void auth_window_t::cleanup()
 
 void auth_window_t::loaded_callback(bool ok, const std::string& message)
 {
+    m_loading = false;
     if(ok)
     {
         gui_t::get().add_window(std::make_shared<user_profile_window_t>());
