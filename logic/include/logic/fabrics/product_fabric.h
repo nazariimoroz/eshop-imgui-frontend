@@ -24,7 +24,7 @@ public:
         return std::make_shared<product_fabric_t>(private_t{});
     }
 
-    /** [ok, error_reason], result in cache */
+    /** [ok, error_reason] */
     std::tuple<bool, std::string> load_all() const;
 
     std::function<void(const std::optional<ctg_models_vec_t>& models, std::string message)> loaded_callback;

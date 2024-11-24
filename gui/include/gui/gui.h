@@ -36,7 +36,6 @@ public:
     std::shared_ptr<base_window_t> remove_window(const std::weak_ptr<base_window_t>& window);
     std::shared_ptr<base_window_t> remove_window(const base_window_t* window);
 
-
 protected:
     std::vector<std::shared_ptr<base_window_t>> m_windows;
     bool m_windows_changed = false;
