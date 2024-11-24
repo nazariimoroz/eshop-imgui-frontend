@@ -28,7 +28,6 @@ protected:
     bool m_loading = false;
 
     std::optional<payment_identificator_t> m_identificator = std::nullopt;
-    std::optional<std::string> m_product_value = std::nullopt;
 
 private:
     void payment_created_callback(std::optional<payment_identificator_t> payment_identificator,

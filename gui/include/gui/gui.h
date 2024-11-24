@@ -32,6 +32,7 @@ public:
 
     std::weak_ptr<base_window_t> add_window(const std::shared_ptr<base_window_t>& window);
     std::weak_ptr<base_window_t> get_window_by_name(const std::string& name);
+    size_t get_windows_count(const std::optional<std::string>& name) const;
     std::shared_ptr<base_window_t> remove_window(const std::weak_ptr<base_window_t>& window);
     std::shared_ptr<base_window_t> remove_window(const base_window_t* window);
 

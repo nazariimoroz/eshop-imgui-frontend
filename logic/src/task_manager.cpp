@@ -36,19 +36,19 @@ void task_manager_t::add_callback(callback_t&& callback)
 {
     std::unique_lock mtx{m_callbacks_mutex};
 
-    callbacks.push_back(std::move(callback));
+    callbacks.push(std::move(callback));
 }
 
 void task_manager_t::process()
 {
     std::unique_lock mtx{m_callbacks_mutex};
 
-    for (const auto & callback : callbacks)
-    {
-        callback();
-    }
+    if (callbacks.empty())
+        return;
 
-    callbacks.clear();
+    callbacks.back()();
+
+    callbacks.pop();
 }
 
 void task_manager_t::wait()

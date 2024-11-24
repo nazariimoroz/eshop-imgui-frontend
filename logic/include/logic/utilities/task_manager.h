@@ -32,7 +32,7 @@ public:
 
 protected:
     BS::thread_pool thread_pool;
-    std::vector<callback_t> callbacks;
+    std::queue<callback_t> callbacks;
 
 protected:
     mutable std::mutex m_callbacks_mutex;

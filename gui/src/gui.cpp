@@ -94,6 +94,20 @@ std::weak_ptr<base_window_t> gui_t::get_window_by_name(const std::string& name)
     return *wi;
 }
 
+size_t gui_t::get_windows_count(const std::optional<std::string>& name) const
+{
+    if (name)
+    {
+        return std::ranges::count_if(m_windows, [&name](const std::shared_ptr<base_window_t>& w)
+        {
+            std::regex reg(name.value());
+            return std::regex_match(w->get_name(), reg);
+        });
+    }
+
+    return m_windows.size();
+}
+
 std::shared_ptr<base_window_t> gui_t::remove_window(const std::weak_ptr<base_window_t>& window)
 {
     if (const auto w = window.lock())

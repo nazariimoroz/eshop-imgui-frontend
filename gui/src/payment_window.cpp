@@ -7,6 +7,7 @@
 #include "imgui_internal.h"
 #include "gui/gui.h"
 #include "gui/imgui_ex.h"
+#include "gui/windows/product_value_window.h"
 
 payment_window_t::payment_window_t()
 {
@@ -33,14 +34,7 @@ void payment_window_t::update()
                  ImGuiWindowFlags_NoCollapse |
                  ImGuiWindowFlags_NoResize);
 
-    if (m_product_value)
-    {
-        product_ui(context_for_correct_exit);
-    }
-    else
-    {
-        payment_ui(context_for_correct_exit);
-    }
+    payment_ui(context_for_correct_exit);
 
     ImGui::End();
 }
@@ -52,12 +46,13 @@ void payment_window_t::product_ui(std::shared_ptr<payment_window_t>& context_for
         ImGui::GetStyle().ItemSpacing.y * 2.f);
     
     ImGui::Text("Your product:");
+    /*
     ImGui::InputText(
         "##ProductValue",
         m_product_value->data(),
         m_product_value->size(),
         ImGuiInputTextFlags_ReadOnly
-        | ImGuiInputTextFlags_AutoSelectAll);
+        | ImGuiInputTextFlags_AutoSelectAll);*/
 
     if (ImGui::Button("Close##payment_window", ImVec2(ImGui::GetColumnWidth(), 0)))
     {
@@ -214,7 +209,13 @@ void payment_window_t::payment_done_callback(
         return;
     }
 
-    m_product_value = product_value;
+    if ( auto pvw = std::dynamic_pointer_cast<product_value_window_t>(
+                    gui_t::get().add_window(std::make_shared<product_value_window_t>()).lock()) )
+    {
+        pvw->product_value = *product_value;
+    }
+
+    gui_t::get().remove_window(this);
 }
 
 void payment_window_t::open_payment_link()

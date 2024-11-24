@@ -30,7 +30,9 @@ add_library(${PROJECT_NAME} STATIC
         src/imgui_ex.cpp
         include/gui/imgui_ex.h
         src/payment_window.cpp
-        include/gui/windows/payment_window.h)
+        include/gui/windows/payment_window.h
+        src/product_value_window.cpp
+        include/gui/windows/product_value_window.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         include
