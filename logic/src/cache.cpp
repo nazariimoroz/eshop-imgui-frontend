@@ -41,7 +41,7 @@ cache_t& cache_t::get()
 #ifndef NDEBUG
     if (!m_singleton)
     {
-        std::cerr << "Cant get gui" << std::endl;
+        std::cerr << "Cant get cache" << std::endl;
         exit(-1);
     }
 #endif

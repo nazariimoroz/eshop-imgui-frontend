@@ -209,7 +209,7 @@ void user_fabric_t::send_ok_callback(const api_user_ok_response_t& response) con
 
         if (self->context_window == std::nullopt)
         {
-            self->loaded_callback(true, "ok");
+            std::cerr << "user_fabric: context window dont set" << std::endl;
         }
         else if (const auto w = self->context_window->lock())
         {
