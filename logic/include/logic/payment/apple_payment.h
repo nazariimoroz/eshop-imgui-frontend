@@ -48,7 +48,7 @@ protected:
     void mt_send_payment_done_callback(std::optional<std::string> product_value,
                                        const std::string& message);
 
-
 private:
     std::shared_ptr<apple_payment_t> apple_shared_from_this();
+
 };

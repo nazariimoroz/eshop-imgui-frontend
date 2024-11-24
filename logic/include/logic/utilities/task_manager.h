@@ -31,8 +31,8 @@ public:
     void wait();
 
 protected:
-    BS::thread_pool thread_pool;
-    std::queue<callback_t> callbacks;
+    BS::thread_pool m_thread_pool;
+    std::queue<callback_t> m_callbacks;
 
 protected:
     mutable std::mutex m_callbacks_mutex;

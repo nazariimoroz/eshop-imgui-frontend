@@ -51,4 +51,5 @@ protected:
 
 private:
     std::shared_ptr<google_payment_t> google_shared_from_this();
+
 };

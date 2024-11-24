@@ -60,17 +60,17 @@ void auth_window_t::login_tab()
             ImGui::GetFrameHeight() * 3.f +
             ImGui::GetStyle().ItemSpacing.y * 2.f);
 
-        ImGuiEx::CentrateByX_ItemWithText(email, "Email", 100);
+        ImGuiEx::CentrateByX_ItemWithText(m_email, "Email", 100);
         ImGui::InputTextWithHint("##login_email",
                                  "Email",
-                                 email,
-                                 sizeof(email));
+                                 m_email,
+                                 sizeof(m_email));
 
-        ImGuiEx::CentrateByX_ItemWithText(password, "Password", 100);
+        ImGuiEx::CentrateByX_ItemWithText(m_password, "Password", 100);
         ImGui::InputTextWithHint("##login_password",
                                  "Password",
-                                 password,
-                                 sizeof(password),
+                                 m_password,
+                                 sizeof(m_password),
                                  ImGuiInputTextFlags_Password);
 
         bool pushed = false;
@@ -106,24 +106,24 @@ void auth_window_t::registration_tab()
             ImGui::GetFrameHeight() * 4.f +
             ImGui::GetStyle().ItemSpacing.y * 2.f);
 
-        ImGuiEx::CentrateByX_ItemWithText(email, "Email", 120);
+        ImGuiEx::CentrateByX_ItemWithText(m_email, "Email", 120);
         ImGui::InputTextWithHint("##reg_email",
                                  "Email",
-                                 email,
-                                 sizeof(email));
+                                 m_email,
+                                 sizeof(m_email));
 
-        ImGuiEx::CentrateByX_ItemWithText(password, "Password", 120);
+        ImGuiEx::CentrateByX_ItemWithText(m_password, "Password", 120);
         ImGui::InputTextWithHint("##reg_password",
                                  "Password",
-                                 password,
-                                 sizeof(password),
+                                 m_password,
+                                 sizeof(m_password),
                                  ImGuiInputTextFlags_Password);
 
-        ImGuiEx::CentrateByX_ItemWithText(repeat_password, "Repeat password", 120);
+        ImGuiEx::CentrateByX_ItemWithText(m_repeat_password, "Repeat password", 120);
         ImGui::InputTextWithHint("##reg_password_repeat",
                                  "Repeat password",
-                                 repeat_password,
-                                 sizeof(repeat_password),
+                                 m_repeat_password,
+                                 sizeof(m_repeat_password),
                                  ImGuiInputTextFlags_Password);
 
         bool pushed = false;
@@ -180,7 +180,7 @@ void auth_window_t::login()
             std::placeholders::_2);
         ufabric->context_window = gui_t::get().get_window_by_name(get_name());
 
-        const auto [ok, message] = ufabric->load(email, password);
+        const auto [ok, message] = ufabric->load(m_email, m_password);
         if(!ok)
         {
             m_loading = false;
@@ -200,7 +200,7 @@ void auth_window_t::registration()
             std::placeholders::_2);
         ufabric->context_window = gui_t::get().get_window_by_name(get_name());
 
-        const auto [ok, message] = ufabric->save(email, password, repeat_password);
+        const auto [ok, message] = ufabric->save(m_email, m_password, m_repeat_password);
         if(!ok)
         {
             m_loading = false;
@@ -212,9 +212,9 @@ void auth_window_t::registration()
 
 void auth_window_t::cleanup()
 {
-    email[0] = 0;
-    password[0] = 0;
-    repeat_password[0] = 0;
+    m_email[0] = 0;
+    m_password[0] = 0;
+    m_repeat_password[0] = 0;
 }
 
 void auth_window_t::loaded_callback(bool ok, const std::string& message)

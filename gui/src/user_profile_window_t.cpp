@@ -47,33 +47,33 @@ void user_profile_window_t::update()
             ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
             ImGui::InputTextWithHint("##new_email",
                 "New email(optional)",
-                new_email,
+                m_new_email,
                 256);
 
             ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
             ImGui::InputTextWithHint("##new_password",
                 "New password(optional)",
-                new_password,
+                m_new_password,
                 256, ImGuiInputTextFlags_Password);
 
-            if(new_password[0])
+            if(m_new_password[0])
             {
                 ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
                 ImGui::InputTextWithHint("##new_password_repeat",
                     "Repeat password",
-                    new_password_repeat,
+                    m_new_password_repeat,
                     256, ImGuiInputTextFlags_Password);
             }
 
-            if(new_email[0] || new_password[0])
+            if(m_new_email[0] || m_new_password[0])
             {
-                if(!new_password[0] || (new_password[0] && strcmp(new_password, new_password_repeat) == 0))
+                if(!m_new_password[0] || (m_new_password[0] && strcmp(m_new_password, m_new_password_repeat) == 0))
                 {
                     ImGui::Spacing();
                     ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
                     ImGui::InputTextWithHint("##old_password",
                         "Old password",
-                        old_password,
+                        m_old_password,
                         256, ImGuiInputTextFlags_Password);
 
 

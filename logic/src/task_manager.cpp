@@ -29,26 +29,26 @@ task_manager_t& task_manager_t::get()
 
 void task_manager_t::add_async_callback(callback_t&& callback)
 {
-    thread_pool.detach_task([callback = std::move(callback)]{ callback(); });
+    m_thread_pool.detach_task([callback = std::move(callback)]{ callback(); });
 }
 
 void task_manager_t::add_callback(callback_t&& callback)
 {
     std::unique_lock mtx{m_callbacks_mutex};
 
-    callbacks.push(std::move(callback));
+    m_callbacks.push(std::move(callback));
 }
 
 void task_manager_t::process()
 {
     std::unique_lock mtx{m_callbacks_mutex};
 
-    if (callbacks.empty())
+    if (m_callbacks.empty())
         return;
 
-    callbacks.back()();
+    m_callbacks.back()();
 
-    callbacks.pop();
+    m_callbacks.pop();
 }
 
 void task_manager_t::wait()

@@ -23,9 +23,9 @@ protected:
     bool m_inited = false;
     bool m_loading = false;
 
-    char email[256] = {0};
-    char password[256] = {0};
-    char repeat_password[256] = {0};
+    char m_email[256] = {0};
+    char m_password[256] = {0};
+    char m_repeat_password[256] = {0};
 
 protected:
     void loaded_callback(bool ok, const std::string& message);

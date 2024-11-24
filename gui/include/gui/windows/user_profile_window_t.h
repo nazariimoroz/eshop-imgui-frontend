@@ -14,8 +14,8 @@ public:
     std::shared_ptr<user_profile_window_t> logout();
 
 protected:
-    char new_email[256] = {0};
-    char new_password[256] = {0};
-    char new_password_repeat[256] = {0};
-    char old_password[256] = {0};
+    char m_new_email[256] = {0};
+    char m_new_password[256] = {0};
+    char m_new_password_repeat[256] = {0};
+    char m_old_password[256] = {0};
 };
