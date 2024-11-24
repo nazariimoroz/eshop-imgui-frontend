@@ -68,7 +68,7 @@ void shop_list_window_t::update()
 
                 ImGui::Text("Payment methods: ");
                 ImGui::PushID(&product);
-                for (const auto& label : {"Google Pay", "Apple Pay", "PayPal"})
+                for (const auto& label : {"Google Pay", "Apple Pay"})
                 {
                     ImGui::SameLine();
                     bool pushed = false;

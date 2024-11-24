@@ -26,7 +26,9 @@ add_library(${PROJECT_NAME} STATIC
         src/base_payment.cpp
         include/logic/payment/base_payment.h
         src/google_payment.cpp
-        include/logic/payment/google_payment.h)
+        include/logic/payment/google_payment.h
+        src/apple_payment.cpp
+        include/logic/payment/apple_payment.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ./include/ )
